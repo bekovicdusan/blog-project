@@ -1,9 +1,11 @@
 <template>
-    <input v-model="query"/>
     <suspense>
         <template #default>
             <div class="getPosts">
-                <h1>All Posts</h1>
+                <h1>Posts</h1>
+                <label class="search-label">Search posts
+                    <input placeholder="Start typing the user's name" class="filter-input" v-model="query"/>
+                </label>
                 <div class="posts">
                     <transition-group 
                         :css="false" 
@@ -22,9 +24,14 @@
                         />
                     </transition-group>
                 </div>
-                <button @click="store.state.showMore = store.state.showMore + 5">
-                    Load more
-                </button>
+                <div class="show-more-wrapper">
+                    <button v-if="computedQuery.length > store.state.showMore" @click="store.state.showMore = store.state.showMore + 5">
+                        Show more
+                    </button>
+                    <button v-else @click="store.state.showMore = store.state.showMore - 5">
+                        Show Less
+                    </button>
+                </div>
             </div>
         </template>
         <template #fallback>
@@ -78,9 +85,6 @@ export default {
             query
         }
     },
-    mounted () {
-        console.log(this.computedQuery)
-    },
     created () {
         this.store.methods.fetchResources()
     },
@@ -94,7 +98,7 @@ export default {
 .posts {
     display: flex;
     flex-direction: column;
-    justify-content: cleave;
+    justify-content: center;
     align-items: center;
     margin-top: 30px;
     .post-enter-from {
@@ -114,6 +118,38 @@ export default {
     }
     .post-leave-active {
         transition: all 3s ease;
+    }
+}
+.show-more-wrapper {
+    margin-bottom: 30px;
+    button {
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 700;
+        padding: 10px 15px;
+        text-decoration: none;
+        outline: none;
+        background-color: transparent;
+        border: 2px solid transparent;
+        &:hover,
+        &:focus,
+        &:active {
+            outline: none;
+            box-shadow: none;
+        }
+        &:hover {
+            border: 2px solid #35495e;
+        }
+
+    }
+}
+.search-label {
+    font-weight: bold;
+    .filter-input {
+        margin-left: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 2px solid #2c3e50;
     }
 }
 </style>

@@ -15,7 +15,7 @@ const routes = [
   {
     path: '/post/:id',
     name: 'Post',
-    props: route => ({ ...route.params, id: route.params.id }),
+    // props: route => ({ ...route.params, id: parseInt(route.params.id) }),
     component: () => import(/* webpackChunkName: "Post" */ '../views/SinglePostView.vue')
   }
 ]

@@ -7,6 +7,11 @@ const state = reactive({
         comments: [],
         users: []
     },
+    singleResource: {
+        post: {},
+        postComments: [],
+        user: {}
+    },
     showMore: 5
 })
 
@@ -24,7 +29,18 @@ const methods = {
                 return {...acc, [user.id]:user}
             }, {})
         }))
-        console.log(state.resources)
+    },
+    async fetchSinglePostResources (postId) {
+        const postReq = axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+        const commentReq = axios.get(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`)
+        const userReq = axios.get(`https://jsonplaceholder.typicode.com/users/${(await postReq).data.userId}`)
+
+        await axios.all([postReq, commentReq, userReq])
+        .then(axios.spread(function(post, comments, user){
+            state.singleResource["post"] = post.data
+            state.singleResource["postComments"] = comments.data
+            state.singleResource["user"] = user.data
+        }))
     }
 }
 
