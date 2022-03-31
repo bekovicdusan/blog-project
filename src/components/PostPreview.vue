@@ -4,7 +4,7 @@
             <h2> {{ title }} </h2>
         </router-link>  
         <p> {{ body }} </p>
-        <span> by <em style="font-weight: bold"> {{ store.state.resources['users'] ? store.state.resources['users'][id].name : 'unknown' }} </em></span>
+        <span> by <em style="font-weight: bold"> {{ store.state.resources['users'] ? store.state.resources['users'][userId].name : 'unknown' }} </em></span>
         <hr>
         <div class="comment-wrapper">
             <h3>Comments</h3>
@@ -28,15 +28,19 @@ import { inject } from 'vue'
 export default {
     props: {
         title: {
-            required: false,
+            required: true,
             type: String
         },
         body: {
-            required: false,
+            required: true,
             type: String
         },
         id: {
-            required: false,
+            required: true,
+            type: Number
+        },
+        userId: {
+            required: true,
             type: Number
         }
     },

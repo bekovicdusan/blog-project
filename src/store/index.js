@@ -1,34 +1,30 @@
 import { reactive } from 'vue'
+import axios from 'axios'
 
 const state = reactive({
-    resources: [],
-    showMore: 5,
-    isLoaded: false
+    resources: {
+        posts: [],
+        comments: [],
+        users: []
+    },
+    showMore: 5
 })
 
 const methods = {
-    fetchResources () {
-        this.fetchPost()
-        this.fetchComments()
-        this.fetchUsers()
-        state.isLoaded = true
-        console.log(state.resources)
-    },
-    fetchPost () {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-        .then(response => response.json().then((json) => state.resources["posts"] = json));
-    }, 
-    fetchComments () {
-        fetch('https://jsonplaceholder.typicode.com/comments')
-        .then(response => response.json().then((json) => state.resources["comments"] = json));
-    },
-    fetchUsers () {
-        fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json().then((json) => {
-            state.resources["users"] = json.reduce((acc, user) => {
+    async fetchResources () {
+        const postsReq = axios.get('https://jsonplaceholder.typicode.com/posts')
+        const commentsReq = axios.get('https://jsonplaceholder.typicode.com/comments')
+        const usersReq = axios.get('https://jsonplaceholder.typicode.com/users')
+
+        await axios.all([postsReq, commentsReq, usersReq])
+        .then(axios.spread(function(posts, comments, users){
+            state.resources["posts"] = posts.data
+            state.resources["comments"] = comments.data
+            state.resources["users"] = users.data.reduce((acc, user) => {
                 return {...acc, [user.id]:user}
             }, {})
-        }));
+        }))
+        console.log(state.resources)
     }
 }
 
