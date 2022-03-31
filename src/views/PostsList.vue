@@ -1,36 +1,51 @@
 <template>
     <div class="getPosts">
-        <h1>posts list works</h1>
-        <button class="send" @click="store.methods.fetchPost">Get Posts</button>
-        <div class="posts">
-            <div v-for="post in store.state.postList" :key="post.id">
-                <h2>{{post.title}}</h2>   
-                <p class="usertext">
-                    {{post.body}}
-                </p>          
-                <router-link v-bind:to="{name: 'Post', params:{id: post.id}}" class="router-link">
-                    <SinglePost
-                        :name="post.name"
-                    />
-                </router-link>
+        <h1>All Posts</h1>
+        <div v-if="store.state.resources['posts']" class="posts">
+            <div v-for="post in store.state.resources['posts'].slice(0, store.state.showMore)" :key="post.id">
+                <PostPreview
+                    :title="post.title ? post.title : 'unknown'"
+                    :body="post.body ? post.body : 'unknown'"
+                    :id="post.id ? post.id : 'unknown'"
+                />
             </div>
         </div>
+        <div v-else class="posts">
+            loading...
+        </div>
+        <button @click="store.state.showMore = store.state.showMore + 5">
+            Load more
+        </button>
     </div>
 </template>
 
 <script>
 import { inject } from 'vue'
-import SinglePost from '@/components/SinglePost.vue'
+import PostPreview from '@/components/PostPreview.vue'
 
 export default {
     setup() {
         const store = inject('store')
+
         return {
             store
         }
+     },
+    created () {
+        this.store.methods.fetchResources()
     },
     components: {
-        SinglePost
+        PostPreview
     }
 }
 </script>
+
+<style lang="scss">
+.posts {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+</style>

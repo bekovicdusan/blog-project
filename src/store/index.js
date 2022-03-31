@@ -1,34 +1,34 @@
 import { reactive } from 'vue'
 
 const state = reactive({
-    postList: []
+    resources: [],
+    showMore: 5,
+    isLoaded: false
 })
 
 const methods = {
+    fetchResources () {
+        this.fetchPost()
+        this.fetchComments()
+        this.fetchUsers()
+        state.isLoaded = true
+        console.log(state.resources)
+    },
     fetchPost () {
         fetch('https://jsonplaceholder.typicode.com/posts')
-        .then((response) => response.json().then((json) => state.postList = json));
-        console.log(state.postList)
+        .then(response => response.json().then((json) => state.resources["posts"] = json));
     }, 
-    createPost () {
-        fetch('https://jsonplaceholder.typicode.com/posts', {
-            method: 'POST',
-            body: JSON.stringify({
-                title: 'foo',
-                body: 'bar',
-                userId: 1,
-                name: 'Milorad Stanojevic',
-                id: 222
-            }),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-            },
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            console.log(json)
-            state.postList.push(json);   
-        })
+    fetchComments () {
+        fetch('https://jsonplaceholder.typicode.com/comments')
+        .then(response => response.json().then((json) => state.resources["comments"] = json));
+    },
+    fetchUsers () {
+        fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response => response.json().then((json) => {
+            state.resources["users"] = json.reduce((acc, user) => {
+                return {...acc, [user.id]:user}
+            }, {})
+        }));
     }
 }
 
